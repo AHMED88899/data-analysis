@@ -1,0 +1,63 @@
+USE PizzaDB
+
+SELECT* FROM pizza_sales
+
+--Total Revenu
+SELECT SUM(total_price) AS total_Revenu 
+FROM pizza_sales
+
+--Average_Order_Value
+SELECT (SUM(total_price)/COUNT(DISTINCT(order_id)))AS Average_Order_Value
+from pizza_sales
+
+--total pizzas sold
+SELECT  SUM(quantity) AS Total_Pizzas_Sold  
+FROM pizza_sales
+
+--Total_Orders
+SELECT COUNT(DISTINCT(order_id)) AS Total_Orders 
+FROM pizza_sales
+
+--Average_Pizza_Per_Order
+SELECT CAST(SUM(quantity) AS decimal(10,2))/CAST(COUNT(DISTINCT(order_id)) AS decimal(10,2)) AS Average_Pizza_Per_Order
+FROM pizza_sales
+
+--Daily_Trend_For_Total_Orders
+SELECT DATENAME(DW,order_date) AS Order_Day , count(DISTINCT(order_id)) AS Total_Orders 
+FROM pizza_sales
+GROUP BY DATENAME(DW,order_date)
+
+--Hourly_Trend_For_Orders
+SELECT DATEPART(HOUR,order_time) AS Order_Hour ,COUNT(DISTINCT(order_id)) AS  Total_Orders 
+FROM pizza_sales
+GROUP BY DATEPART(HOUR,order_time)
+ORDER BY DATEPART(HOUR,order_time)
+
+--% Of_Sales_By_Pizza_Category
+SELECT pizza_category , CAST(SUM(total_price) AS decimal(10,2)) AS Total_Revenue , CAST(SUM(total_price)*100 / (SELECT SUM(total_price) FROM pizza_sales )AS decimal(10,2)) AS PCT
+FROM pizza_sales
+GROUP BY pizza_category
+
+--% Of_Sales_By_Pizza_Size
+SELECT pizza_size , CAST(SUM(total_price)AS decimal(10,2)) AS Total_Revenue , CAST(SUM(total_price)*100 / (SELECT SUM(total_price) FROM pizza_sales )AS decimal(10,2)) AS PCT
+FROM pizza_sales
+GROUP BY pizza_size
+
+==Total_Pizza_Sold_By_Pizza_Category
+SELECT  pizza_category , COUNT(quantity) AS Total_Quantity_Sold
+FROM pizza_sales
+GROUP BY pizza_category
+ORDER BY Total_Quantity_Sold DESC
+
+--Top_Five_Best_Seller_By_Total_Pizza_Sold
+SELECT  TOP 5 pizza_name ,  COUNT(quantity) AS Total_Quantity_Sold
+FROM pizza_sales
+GROUP BY pizza_name 
+ORDER BY Total_Quantity_Sold DESC
+
+--Bottom_Five_Best_Seller_By_Total_Pizza_Sold
+
+SELECT  TOP 5 pizza_name ,  COUNT(quantity) AS Total_Quantity_Sold
+FROM pizza_sales
+GROUP BY pizza_name 
+ORDER BY Total_Quantity_Sold 
